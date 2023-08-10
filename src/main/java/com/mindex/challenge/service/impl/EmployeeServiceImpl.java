@@ -24,6 +24,13 @@ public class EmployeeServiceImpl implements EmployeeService {
         LOG.debug("Creating employee [{}]", employee);
 
         employee.setEmployeeId(UUID.randomUUID().toString());
+        List<Employee> subordinates = employee.getDirectReports();
+        //enforce that directReports are only maintained on the manager record - no need to waste the space!
+    	if (subordinates != null) {
+    		for (Employee subordinate : subordinates) {
+    			if (subordinate.getDirectReports() != null) { subordinate.setDirectReports(null); }
+    		}
+    	}
         employeeRepository.insert(employee);
 
         return employee;
@@ -45,22 +52,30 @@ public class EmployeeServiceImpl implements EmployeeService {
     @Override
     public Employee update(Employee employee) {
         LOG.debug("Updating employee [{}]", employee);
-
+        List<Employee> subordinates = employee.getDirectReports();
+        //enforce that directReports are only maintained on the manager record - no need to waste the space!
+    	if (subordinates != null) {
+    		for (Employee subordinate : subordinates) {
+    			if (subordinate.getDirectReports() != null) { subordinate.setDirectReports(null); }
+    		}
+    	}
         return employeeRepository.save(employee);
     }
     
     @Override
     public ReportingStructure getReportsCount(String id) {
-        LOG.debug("Reading employee with id [{}]", id);
+        LOG.debug("Collecting count of all reports on employee with id [{}]", id);
 
         Employee employee = employeeRepository.findByEmployeeId(id);
-        ReportingStructure reports = new ReportingStructure(id);
+        ReportingStructure reports = new ReportingStructure();
 
         if (employee == null) {
             throw new RuntimeException("Invalid employeeId: " + id);
         }
         else {
+            reports.setEmployeeId(id);
         	List<String> reportsIDs = new ArrayList<String>();  //reportsIDs is needed to prevent infinite loops
+        	reportsIDs.add(employee.getEmployeeId()); //under no circumstance should an employee be considered to report to themselves
         	reports.setNumberOfReports(countAllReports(employee, reportsIDs));
         }
 
@@ -77,10 +92,12 @@ public class EmployeeServiceImpl implements EmployeeService {
     	if (subordinates == null) { return out; }
     	for (Employee subordinate : subordinates) {
     		String subID = subordinate.getEmployeeId();
+            LOG.debug(subordinate.getFirstName() + " " + subordinate.getLastName() + "(" + subID + ") reports to " 
+            		+ employee.getFirstName() + " " + employee.getLastName() + "(" + employee.getEmployeeId() + ")");
     		if (!excludingIDs.contains(subID)) {
     			excludingIDs.add(subID);
     			out++;
-    			out += countAllReports(subordinate, excludingIDs);
+    			out += countAllReports(employeeRepository.findByEmployeeId(subID), excludingIDs);
     		}
     	}
     	return out;

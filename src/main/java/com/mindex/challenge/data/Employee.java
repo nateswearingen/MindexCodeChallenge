@@ -1,8 +1,11 @@
 package com.mindex.challenge.data;
 
 import java.util.List;
+import java.util.ArrayList;
+import org.springframework.data.annotation.Id;
 
 public class Employee {
+	@Id
     private String employeeId;
     private String firstName;
     private String lastName;
@@ -59,5 +62,28 @@ public class Employee {
 
     public void setDirectReports(List<Employee> directReports) {
         this.directReports = directReports;
+    }
+    
+    public boolean addDirectReport(Employee subordinate) {
+    	if (this.directReports == null) { this.directReports = new ArrayList<Employee>(); }
+    	if (this.directReports.contains(subordinate)) { return false; } 
+    	return this.directReports.add(subordinate);
+    	
+    }
+    
+    public boolean removeDirectReport(Employee subordinate) {
+    	if (!this.directReports.contains(subordinate)) { return false; }
+    	return this.directReports.remove(subordinate);
+    }
+    
+    @Override
+    public String toString() {
+    	return getClass().getSimpleName() + "[ID: " + this.employeeId 
+    	   + ", First: " + this.firstName
+    	   + ", Last: " + this.lastName
+    	   + ", Position: " + this.position
+    	   + ", Department: " + this.department
+    	   + ", Reports: " + this.directReports
+    	   + "]";
     }
 }

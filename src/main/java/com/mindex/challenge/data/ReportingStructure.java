@@ -26,4 +26,9 @@ public class ReportingStructure {
     public void setNumberOfReports(int numberOfReports) {
         this.numberOfReports = numberOfReports;
     }
+    
+    @Override
+    public String toString() {
+    	return getClass().getSimpleName() + "[empID=" + employeeId + ", numReports: " + numberOfReports + "]";
+    }
 }

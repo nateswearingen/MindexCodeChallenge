@@ -50,4 +50,14 @@ public class Compensation {
     public String toString() {
     	return getClass().getSimpleName() + "[empID=" + employeeId + ", salary: " + salary + ", effective: " + effectiveDate + "]";
     }
+    
+    @Override
+    public boolean equals(Object o) {
+    	if (this == o) { return true; }
+    	if (!(o instanceof Compensation)) {
+    		return false; 
+    	}
+    	Compensation comp = (Compensation) o;
+    	return this.employeeId.equals(comp.getEmployeeId()) && this.salary == comp.getSalary() && this.effectiveDate.equals(comp.getEffectiveDate());
+    }
 }

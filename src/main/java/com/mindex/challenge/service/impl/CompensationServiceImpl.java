@@ -22,10 +22,8 @@ public class CompensationServiceImpl implements CompensationService {
     @Override
     public Compensation create(Compensation compensation) {
         LOG.debug("Creating compensation for employeeID [{}]", compensation);
-
-        compensation.setEmployeeId(UUID.randomUUID().toString());
+        
     	compensationRepository.insert(compensation);
-
         return compensation;
     }
 
@@ -35,8 +33,8 @@ public class CompensationServiceImpl implements CompensationService {
 
         List<Compensation> compensation = compensationRepository.findByEmployeeId(id);
 
-        if (compensation == null) {
-            throw new RuntimeException("Unable to find compensation for employeeId: " + id);
+        if (compensation == null || compensation.size() < 1) {
+            LOG.warn("Unable to find compensation for employeeId: " + id);
         }
 
         return compensation;

@@ -1,6 +1,6 @@
 package com.mindex.challenge.controller;
 
-import com.mindex.challenge.data.*;
+import com.mindex.challenge.data.Employee;
 import com.mindex.challenge.service.EmployeeService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,13 +34,5 @@ public class EmployeeController {
 
         employee.setEmployeeId(id);
         return employeeService.update(employee);
-    }
-    
-    @GetMapping("/reports_count/{id}")
-    public ReportingStructure getReportsCount(@PathVariable String id) {
-    	LOG.debug("Received ReportsCount request for employee id [{}]", id);
-    	
-
-    	return employeeService.getReportsCount(id);
     }
 }
